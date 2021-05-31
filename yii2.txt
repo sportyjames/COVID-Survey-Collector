@@ -1,0 +1,296 @@
+Pre:
+
+1. Procedural PHP vs. OO PHP
+Procedural: 
+- we have a page with php controller, model, view code all at once
+OO:
+- seperate into 3 files/classes(there is 1 class inside 1 file)
+- can import the three files/classes later 
+- controller: control the input we get from the user,
+    - e.g. when a user goto a website and feed us a name they want 
+    to query from database, we handle that using one file/class
+- model: connecting to the database and querying the database 
+    - e.g. want to query multiple things from database,
+     can just reuse the code  
+- view: what actually takes DB data and show on the website 
+
+2. MVC Design pattern:
+    1. controller takes input from user and does sth to the DB 
+    by communicating to model. If sth need to be shown, controller 
+    get data from model and give it to view which then show it to the 
+    user 
+
+    2. controller gets information from user and does sth to the DB 
+    by communicating to model. View then communicate to the model and 
+    show to the user. So no communication between controller and view
+
+3. Virtual host 
+- better than localhost
+- replicate production environment
+- helloworld.test 
+- yii2.test
+
+
+
+Intro:
+
+1. what is Yii2?
+- a MVC framework written in fully object-oriented way in PHP
+- what advantage does it have: security, performance, and extensibility
+- popular: in the US. 
+- important feature: using MVC pattern, comes with bootstrap out of the box
+- it uses PDO with active record and works fine in all relational database or nonrelational
+- powerful routing, powerful restful API, powerful validation, powerful role based access control system
+- comes with giii, code generation system 
+- prerequsite: 
+    1. OOP: https://www.youtube.com/watch?v=JmDHHhxfe1w&list=PLLQuc_7jk__VDhXWi544iK-SgljlGGlrX
+    2. HTML/CSS/JS
+    3. SQL
+- fast 
+- suitable for small and large applications 
+- routing, validation
+
+feature:
+- MVC 
+- Bootstrap
+- Basic(single app) and advanced version(frontend, backend)
+- it uses PDO with active record
+
+Development process:
+- Entry script first take request and create application
+- the application consist of components
+    - have zero or more components
+    - have zero or more module(small applications)
+    - have 1 or more controllers, need to have 1 to handle the request and return the response 
+- module can also have controllers
+- controller has filters
+    - filter have different purpose: reject a request, return response, modify response to JSON OR XML
+- controller uses the model to get data and render the views 
+- views can use widgets and asset bundles
+    - widgets are UI components which render alert or button, etc
+    - asset bundles are bunch of css and js files which is intended for some particular pages
+
+The flow of request and response 
+- user makes request to the entry script 
+- the configuration file is loaded and application instance is created
+- then the application resolves the current route and base on this request component. every component of the application is a single term
+- base on this request component, controller is created 
+- controller have actions, actions are responsible to take data of request then get data from the model, render the view , and return response to the user   
+- if there are filters attached to the controller or particular action. it may reject the action and return the response immediately
+- 2 types of action: 
+    - action inside controller(method): start with word action
+    - standalone actions: does repetitive things
+- load model
+- render view and send back to user
+
+2. install Yii2
+- we have 3 main folders: model, controller, view 
+
+asset:
+- special classes called asset bundles which are responsible for registering CSS and JS file inside view 
+
+comments:
+- console application
+
+config:
+- there are files basically are for configuration
+- array of php key and values
+- based on configs, applications are initialized 
+
+controllers:
+- controllers have actions
+- actions are the responsible endpoint for rendering view
+
+mail:
+- place where you save your main sending templates
+
+models:
+- folder where you save a record
+
+runtime:
+- framework generated files
+
+test:
+- where tests are written
+
+vagrant:
+- to run yii framework on vagrant container system
+
+vendor:
+- all install packages are saved here
+
+views:
+- where all views are there
+
+web:
+- important
+- contain the entry script
+- index.php is responsible to handle all the request, create app instance and run it
+- in index.php, we define debug and env constant
+
+widget:
+- user interface widgets are saved 
+
+yii:
+- common php file: running a console command
+
+3. run the application
+- php yii serve
+- navigate b/t pages and check the URL:
+    - index.php is the entry script
+    - r refers to the root, root is site
+    - %2F is the encoded version of /
+    - site the controller ID 
+    - login is the action ID
+    - create one more action
+        - public function actionHello()
+        {
+            return $this->render('hello');
+        }
+    - go to views folder, we see a site subfolder
+    - site subfolder is named because of controller, controller is site controller, it has ID site
+    - create a hello.php inside site subfolder
+    - test it on browser
+    - try to now add an argument in the controller
+        - the argument need to be an associative array( key is variable name, value is the variable)
+        - when testing, need to pass the parameter to the url
+
+Crash Course:
+1. login is not connected to DB yet
+
+2. models
+- contact and login are responsible for rendering the UI 
+    - in this case, handling the submitted form 
+- user is a different kind of class. It is an identity.
+  It implements the identity interface and thus it implements
+  couple of methods. like find identitybyID, findIdentityByAccessToken
+  these methods must be implemented and it's configured in the web php
+    - it not connected to database 
+    - it is just users static array(username and password)
+
+- we have rules, login form and contact form both are extends of models
+- model is a data provider which also handles some logic
+    - in this case, we define some fields username, password, remember me, and we have rules
+    - based on these rules, the validation of form happens 
+    - we have username and password required so when we click login button with empty field, I see red text
+    - we have built in rules and we can also do customized rules
+    - validate password checks if password valid according to static user array in User model
+    - if not valid, it adds error to the password attribute
+    - there is login method which runs the validate and the validate basically execute all rules which are declared in rules method
+    - if the validate is valid then we call this login method of this user singleton component
+- also rules in contactForm
+
+
+3. views
+- layouts: basic skeleton of HTML
+    - there are widgets, breadcrumbs, alert, bootstrap widget like navbar and nav
+    - two ways of using widgets(UI components):
+        - widgetname::begin  widgetname::end 
+        - widgetname::widget
+    - we have content variable which contain the page content
+    - if remove it, we can't see page content but nav content 
+    - page content is the views file actually
+    - controller renders a view called index. This is index is located inside view/site/index.php
+    - site is the ID of controller, basically this controller render stuff inside site 
+    - below here is the backbar: information about the app
+
+
+4. controllers
+- single site controller
+    - we have behaviors: 
+        special type of classes which adds some additonal functionality to class
+        can be attached to controllers, models or any other classes basically 
+        Right now, these behaviors are filters(can reject the action and return the response immediately without executing the action)
+    - in this case, we have access control which basically tells the framework that this access control
+    filter should only work on logout action and it should allow to access the logout action for authenticated users only 
+    - second filter: make sure logout is through post method 
+    - we also have standalone actions: captura and error
+    - we have other actions which uses c amelcase naming.
+        - every action has its own ID
+    - how to take out index.php in URL: goto web.php in config folder, uncomment urlManager
+    
+
+5. DB connection 
+- create db and table on phpmyadmin
+- goto config/db.php and change dbName to tablename 
+
+
+6. login with db usertable info instead of default framework info
+- goto user class
+- delete the public fields and $users
+- extends user from ActiveRecord(if want to map existing class to db table)
+    - in this case, user class map to user table
+- table name is the same as the class name by default. 
+    - Need to override if not same 
+- update methods inside user class 
+    - findIdentity
+    - findIdentityByAccessToken 
+    - findByUsername 
+    - getAuthKey 
+
+- goto LoginForm class:
+    - has rules and logics for login validation 
+
+- problem: the password is not encrypted 
+    - solution: implement signup of user
+
+7. implement the signup of user 
+- goto siteController 
+    - below the actionLogin, create new actionSignup
+- create a signup form inside models 
+    - it extends Model
+    - should have public properties: username, password, password_repeat 
+    - create rules methods:
+        - username, password, password_repeat are required 
+        - username, password, password_repeat, must be a string with min len 4 and max len 16 
+        - password_repeat compare, compareAttribute => password 
+    - create signup method 
+        - create user instance from User class because it creates user in DB
+        - write username 
+        - write secured password 
+        - write access_token 
+        - write auth_key 
+        - call user save 
+- work on actionSignup
+
+- create signup.php in the site folder 
+
+8. model generator 
+- goto /gii 
+- we gonna generate model 
+- user.php is now changed 
+- implements the identity interface now 
+- implements the methods we copied earlier 
+- when we generate this model, these properties are added to the class 
+- continue working on signup form 
+
+9. change the validatePassword method to encrypted version in user class 
+
+10. add signup bar to layout/main.php 
+
+
+11. Work on the article 
+- create article table 
+    - id, title, slug(unique id for title), body, created, updated, created by, updated by,
+- use gii, generate article model 
+- getCreatedby in article.php is one to many relation 
+- use CRUD generator: 
+    - model class: app\models\Article
+    - search model class: app\models\ArticleSearch
+    - control model class: app\controllers\ArticleController
+    - view Path: @app/views/article
+    - widget used in index page: ListView
+
+12. change the display of info
+- item view(can have 2 ways to do it)
+    1. use a php function 
+    2. use a php file
+- use php file to display
+    - use html helpers encode method to encode some special characters
+    - also outputting these title 
+
+                    
+
+
+
+
